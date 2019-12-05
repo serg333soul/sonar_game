@@ -11,6 +11,7 @@ def getNewBoard():
                 board[x].append('~')
             else:
                 board[x].append('`')
+    # board = [[]for i in range(15)]            
     return board
 
 def drawBoard(board):
