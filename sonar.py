@@ -42,16 +42,32 @@ def drawBoard(board):
 
 def getRandomChets(numChets):
     #Создать список структур данных сундука
-    chets = []
-    while len(chets) < numChets:
+    chests = []
+    while len(chests) < numChets:
         newChets = [random.randint(0, 59), random.randint(0, 14)]
-        if newChets not in chets: # Убедиться, что сундука здесь нет.
-            chets.append(newChets)
-    return chets
+        if newChets not in chests: # Убедиться, что сундука здесь нет.
+            chests.append(newChets)
+    return chests
 
 def isOnBoard(x, y):
     # Возвращает True если координаты есть на поле.
-    return x >= 0 and x <= 59 and y >= 0 and y <=14    
+    return x >= 0 and x <= 59 and y >= 0 and y <=14
 
+def makeMove(board, chests, x, y):
+    for cx, cy in chests:
+        distance = math.sqrt((cx-x) * (cx-x) + (cy-y) * (cy-y))
+        if distance < smallestDistance:
+            smallestDistance = distance
+            smallestDistance = round(smallestDistance)
+        if smallestDistance == 0:
+            chests.remove([x, y])
+            return 'Вы нашли сундук с сокровищами на затонувшем судне.'
+        else:
+            if smallestDistance < 10:
+                board[x][y] = str(smallestDistance)
+                return 'Сундук с сокровищами обнаружен на расстоянии %s от гидролокатора.' % (smallestDistance)
+            else:
+                board[x][y] = 'X'
+                return 'Гидролокатор ничего не обнаружил.'
 a = getNewBoard()
 b = drawBoard(a)
