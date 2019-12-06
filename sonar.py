@@ -59,6 +59,7 @@ def makeMove(board, chests, x, y):
     #Удалить сундукис сокровищами из списка с сундуками, как только их нашли.
     #Вернуть False, если это недопустимый ход.
     #В противном случае, вернуть строку с результатом этого хода."
+    smallestDistance = 100
     for cx, cy in chests:
         distance = math.sqrt((cx-x) * (cx-x) + (cy-y) * (cy-y))
         if distance < smallestDistance:
@@ -89,7 +90,29 @@ def enterPlayerMove(previousMoves):
                 print('Здесь вы уже опускали гидролокатор')
                 continue
             return [int(move[0]), int(move[1])]
-        print('Введите число от 0 до 59, потом пробел, а затем число от 0 до 14.')       
+        print('Введите число от 0 до 59, потом пробел, а затем число от 0 до 14.')
+
+while True:
+    sonarDevices = 20
+    theBoard = getRandomChets(3)
+    drawBoard(theBoard)
+    previousMoves = []
+    while sonarDevices > 0:
+         # Показать гидролокаторные устройства и сундуки с сокровищами.
+         print('Осталось гидролокаторов: %s. Осталось сундуков с сокровищами: %s.' % (sonarDevices, len(theChests)))
+         x, y = enterPlayerMove(previousMoves)
+         previousMoves.append([x, y])  # Мы должны отслеживать все ходы, чтобы гидролокаторы могли обновляться.
+         moveResult = makeMove(theBoard, theChests, x, y)
+         if moveResult == False:
+             continue
+        else:
+            if moveResult ==  'Вы нашли сундук с сокровищами на затонувшем судне!':
+                # Обновить все гидролокаторные устройства, в настоящее время находящиеся на карте.
+                for x, y in previousMoves:
+                    makeMove(theBoard, theChests, x, y)
+            drawBoard(theBoard)
+            print(moveResult)            
+
 
 a = getNewBoard()
 b = drawBoard(a)
