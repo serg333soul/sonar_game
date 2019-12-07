@@ -11,7 +11,8 @@ def getNewBoard():
                 board[x].append('~')
             else:
                 board[x].append('`')
-    # board = [[]for i in range(15)]
+    # board = [[y for in range(15) if random.randint(0, 1) == 0 ]for i in range(60)]
+        #print(len(board), board[x])
     return board
 
 def drawBoard(board):
@@ -21,8 +22,8 @@ def drawBoard(board):
         tensDigitsLine += (' ' * 9) + str(i)
 
     print(tensDigitsLine)
-    print(' ' + ('0123456789' * 6))
-    print()
+    print('   ' + ('0123456789' * 6))
+    #print()
 
     # Вывести каждые из 15 рядов
     for row in range(15):
@@ -34,11 +35,12 @@ def drawBoard(board):
         # Создать строку для этого ряда на игровом поле
         boardRow = ''
         for column in range(60):
+            #print(boardRow, 'board[column][row] = ', board[column][row])
             boardRow += board[column][row]
         print('%s%s %s %s' % (extraSpace, row, boardRow, row))
 
-    print()
-    print(' ' + ('0123456789' * 6))
+    #print()
+    print('   ' + ('0123456789' * 6))
     print(tensDigitsLine)
 
 def getRandomChets(numChets):
@@ -52,7 +54,8 @@ def getRandomChets(numChets):
 
 def isOnBoard(x, y):
     # Возвращает True если координаты есть на поле.
-    return x >= 0 and x <= 59 and y >= 0 and y <=14
+    return 0 <= x <= 59 and 0 <= y <= 14
+    #return x >= 0 and x <= 59 and y >= 0 and y <=14
 
 def makeMove(board, chests, x, y):
     #Изменить структуру данных поля, используя символ гидролокатора.
@@ -62,11 +65,14 @@ def makeMove(board, chests, x, y):
     smallestDistance = 100
     for cx, cy in chests:
         distance = math.sqrt((cx-x) * (cx-x) + (cy-y) * (cy-y))
+        print(chests)
+        print(cx, '-', x, '*', cx, '-', x, '+', cy, '-', y, '*', cy, '-', y, '=', distance)
         if distance < smallestDistance:
             smallestDistance = distance
             smallestDistance = round(smallestDistance)
         if smallestDistance == 0:
             chests.remove([x, y])
+            board[x][y] = '*'
             return 'Вы нашли сундук с сокровищами на затонувшем судне.'
         else:
             if smallestDistance < 10:
@@ -94,25 +100,41 @@ def enterPlayerMove(previousMoves):
 
 while True:
     sonarDevices = 20
-    theBoard = getRandomChets(3)
+    theBoard = getNewBoard()
+    theChests = getRandomChets(3)
     drawBoard(theBoard)
     previousMoves = []
     while sonarDevices > 0:
-         # Показать гидролокаторные устройства и сундуки с сокровищами.
-         print('Осталось гидролокаторов: %s. Осталось сундуков с сокровищами: %s.' % (sonarDevices, len(theChests)))
-         x, y = enterPlayerMove(previousMoves)
-         previousMoves.append([x, y])  # Мы должны отслеживать все ходы, чтобы гидролокаторы могли обновляться.
-         moveResult = makeMove(theBoard, theChests, x, y)
-         if moveResult == False:
-             continue
+        # Показать гидролокаторные устройства и сундуки с сокровищами.
+        print('Осталось гидролокаторов: %s. Осталось сундуков с сокровищами: %s.' % (sonarDevices, len(theChests)))
+        x, y = enterPlayerMove(previousMoves)
+        previousMoves.append([x, y])  # Мы должны отслеживать все ходы, чтобы гидролокаторы могли обновляться.
+        print(previousMoves) # смотрю список сделаных ходов
+        moveResult = makeMove(theBoard, theChests, x, y)
+        if moveResult == False:
+            continue
         else:
             if moveResult ==  'Вы нашли сундук с сокровищами на затонувшем судне!':
                 # Обновить все гидролокаторные устройства, в настоящее время находящиеся на карте.
                 for x, y in previousMoves:
                     makeMove(theBoard, theChests, x, y)
             drawBoard(theBoard)
-            print(moveResult)            
+            print(moveResult)
+        if len(theChests) == 0:
+            print('Вы нашли все сундуки на затонувших короблях!')
+            break
+        sonarDevices -= 1
+        if sonarDevices == 0:
+            print('Все гидролокаторы опущены на дно! Придется разворачивать корабль и')
+            print('отправляться домой, в порт! Игра окончена.')
+            print('Вы не нашли сундуки в следующих местах:')
+            for x, y in theChests:
+                print('%s, %s' % (x, y))
+            print('Хотите сыграть еще раз? (да или нет)')
+            if not input().lower().startswith('д'):
+                sys.exit()
 
 
-a = getNewBoard()
-b = drawBoard(a)
+
+#a = getNewBoard()
+#b = drawBoard(a)
